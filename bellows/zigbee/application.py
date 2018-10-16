@@ -216,6 +216,13 @@ class ControllerApplication(zigpy.application.ControllerApplication):
         if expect_reply:
             reply_fut = asyncio.Future()
         self._pending[sequence] = (send_fut, reply_fut)
+        LOGGER.debug("ASSERTDEBUG - sequence=%s", sequence)
+        for pending in list(self._pending):
+            LOGGER.debug("ASSERTDEBUG - pending=%s", pending)
+            diff = abs(sequence - pending)
+            if diff > 50 and diff < 100:
+               self._pending.pop(pending)
+               LOGGER.debug("ASSERTDEBUG-REMOVE - Removing hung pending=%s", pending)
 
         aps_frame = t.EmberApsFrame()
         aps_frame.profileId = t.uint16_t(profile)
